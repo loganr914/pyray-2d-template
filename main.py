@@ -1,4 +1,4 @@
-# Imports
+# Import global variables and 
 from settings import *
 
 # Main function
@@ -8,7 +8,7 @@ def main():
             self.pos = pos
             self.speed = speed
             self.dir = Vector2()
-            self.texture = load_texture(join('2D', 'assets', 'textures', 'jack.png'))
+            self.texture = load_texture(join('assets', 'textures', 'jack.png'))
 
         def update(self):
             self.dir.x = int(is_key_down(KEY_D)) - int(is_key_down(KEY_A))
@@ -43,16 +43,16 @@ def main():
     set_window_min_size(RENDER_WIDTH, RENDER_HEIGHT)
 
 # Texture and sprite loading
-    logo_image = load_image(join('2D', 'assets', 'textures', 'raylib_64x64.png'))
+    logo_image = load_image(join('assets', 'textures', 'raylib_64x64.png'))
     image_color_invert(logo_image)
     logo_texture = load_texture_from_image(logo_image)
 
-    background_texture = load_texture(join('2D', 'assets', 'textures', 'tilemap.png'))
+    background_texture = load_texture(join('assets', 'textures', 'tilemap.png'))
 
     npc_sprites = [
-        load_texture(join('2D', 'assets', 'textures', 'my_char.png')),
-        load_texture(join('2D', 'assets', 'textures', 'ghosto.png')),
-        load_texture(join('2D', 'assets', 'textures', 'red.png'))
+        load_texture(join('assets', 'textures', 'my_char.png')),
+        load_texture(join('assets', 'textures', 'ghosto.png')),
+        load_texture(join('assets', 'textures', 'red.png'))
     ]
 
     player = Player(pos=Vector2(RENDER_WIDTH//2, RENDER_HEIGHT//2), speed=50)
@@ -79,9 +79,10 @@ def main():
     show_fps = False
 
 # Set FPS to
+    FPS = get_monitor_refresh_rate(get_current_monitor())
     set_target_fps(FPS)
 
-# Update/draw loops for each screen
+# Update and draw loops for each screen
     while not window_should_close():
 
 # ALL SCREENS
