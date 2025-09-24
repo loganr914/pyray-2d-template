@@ -1,9 +1,15 @@
-# Import global variables and 
+## INTEGER SCALING TEMPLATE ##
+
 from settings import *
 
-# Main function
+
+## MAIN FUNCTION ##
+
 def main():
-    class Player:    
+
+## PLAYER CLASS ##
+
+    class Player:
         def __init__(self, pos, speed):
             self.pos = pos
             self.speed = speed
@@ -11,8 +17,8 @@ def main():
             self.texture = load_texture(join('assets', 'textures', 'jack.png'))
 
         def update(self):
-            self.dir.x = int(is_key_down(KEY_D)) - int(is_key_down(KEY_A))
-            self.dir.y = int(is_key_down(KEY_S)) - int(is_key_down(KEY_W))
+            self.dir.x = int(is_key_down(KeyboardKey.KEY_D)) - int(is_key_down(KeyboardKey.KEY_A))
+            self.dir.y = int(is_key_down(KeyboardKey.KEY_S)) - int(is_key_down(KeyboardKey.KEY_W))
             self.dir = vector2_normalize(self.dir)
 
             dt = get_frame_time()
@@ -22,11 +28,6 @@ def main():
             self.rec = Rectangle(self.pos.x, self.pos.y, 32, 32)
 
         # Always stop on pixel grid
-            if self.dir.x != 0:
-                self.pos.x = self.pos.x
-            if self.dir.y != 0:
-                self.pos.y = self.pos.y
-
             if self.dir.x == 0:
                 self.pos.x = int(self.pos.x)
             if self.dir.y == 0:
@@ -35,16 +36,27 @@ def main():
         def draw(self):
             draw_texture_v(self.texture, self.pos, WHITE)
 
-# Initialize OpenGL window with desired flags
-    set_config_flags(FLAG_WINDOW_RESIZABLE)
-    init_window(SCREEN_WIDTH, SCREEN_HEIGHT, b"pixel scaling template")
 
-    target = load_render_texture(RENDER_WIDTH, RENDER_HEIGHT)
+## Initialize OpenGL window with desired flags ##
+
+    set_config_flags(ConfigFlags.FLAG_WINDOW_RESIZABLE)
+    init_window(SCREEN_WIDTH, SCREEN_HEIGHT, b"pixel scaling template")
     set_window_min_size(RENDER_WIDTH, RENDER_HEIGHT)
 
-# Texture and sprite loading
+    target = load_render_texture(RENDER_WIDTH, RENDER_HEIGHT)
+
+
+## INITIALIZE PLAYER OBJECT ##
+
+    player = Player(pos=Vector2(RENDER_WIDTH//2, RENDER_HEIGHT//2), speed=50)
+
+
+## LOAD ASSETS ##
+
     logo_image = load_image(join('assets', 'textures', 'raylib_64x64.png'))
+
     image_color_invert(logo_image)
+
     logo_texture = load_texture_from_image(logo_image)
 
     background_texture = load_texture(join('assets', 'textures', 'tilemap.png'))
@@ -55,9 +67,9 @@ def main():
         load_texture(join('assets', 'textures', 'red.png'))
     ]
 
-    player = Player(pos=Vector2(RENDER_WIDTH//2, RENDER_HEIGHT//2), speed=50)
 
-# Camera settings
+## Camera settings ##
+
     camera = Camera2D(
         Vector2(RENDER_WIDTH//2, RENDER_HEIGHT//2),  # Offset
         player.pos,                                  # Target
@@ -65,34 +77,35 @@ def main():
         1.0                                          # Zoom
     )
 
-# Color fading variables
-    rgb_raywhite = (245, 245, 245)
-    rgb_gray = (130, 130, 130)
-    fade_in_alpha = 0
-    fade_speed = 1
-    max_alpha = 255
 
-# Start on the logo screen
+## STARTING SCREEN STATE ##
+
     current_screen = GameScreen.LOGO
 
-# FPS counter state
-    show_fps = False
 
-# Set FPS to
+## Set FPS to monitor setting ##
+
     FPS = get_monitor_refresh_rate(get_current_monitor())
+
     set_target_fps(FPS)
 
-# Update and draw loops for each screen
+    show_fps = False
+
+
+## GAME LOOP ##
+
     while not window_should_close():
 
-# ALL SCREENS
-    # Update loop
+## ALL SCREENS ##
+
+    ## Update loop ##
+
     # Get current window dimensions
         window_width = get_render_width()
         window_height = get_render_height()
 
     # Limit window size to
-        scale = min(window_width / RENDER_WIDTH, window_height / RENDER_HEIGHT)
+        scale = int(min(window_width / RENDER_WIDTH, window_height / RENDER_HEIGHT))
 
     # Calculate the size of the scaled target
         scaled_width = RENDER_WIDTH * scale
@@ -102,7 +115,7 @@ def main():
         render_x = (window_width - scaled_width) * 0.5
         render_y = (window_height - scaled_height) * 0.5
 
-    # Source rect for the render texture (negative height because OpenGL counts Y coordinates bottom to top)
+    # Source rect for the render texture (negative height because OpenGL counts Y coordinates in the reverse direction)
         source_rec = Rectangle(0, 0, target.texture.width, -target.texture.height)
         dest_rec = Rectangle(render_x, render_y, scaled_width, scaled_height)
 
@@ -117,9 +130,9 @@ def main():
             disable_cursor()
 
     # Toggle fullscreen with F4
-        if is_key_pressed(KEY_F4):
+        if is_key_pressed(KeyboardKey.KEY_F4):
             toggle_fullscreen()
-        if is_key_pressed(KEY_F3):
+        if is_key_pressed(KeyboardKey.KEY_F3):
             show_fps = not show_fps
 
     # Draw loop
@@ -127,48 +140,36 @@ def main():
         begin_texture_mode(target)
         clear_background(BLACK)
 
-# LOGO SCREEN
+## LOGO SCREEN ##
+
         if current_screen == GameScreen.LOGO:
 
-    # Update loop
+    ## Update loop ##
+
         # Check for screen switch conditions
-            if get_time() > 5 or is_key_pressed(KEY_SPACE) or is_gesture_detected(GESTURE_TAP):
+            if get_time() > 5 or is_key_pressed(KeyboardKey.KEY_SPACE) or is_gesture_detected(Gesture.GESTURE_TAP):
                 current_screen = GameScreen.TITLE
 
-        # Logo and text sequential fade-in
-            if fade_in_alpha < max_alpha:
-                fade_in_alpha += fade_speed
-                if fade_in_alpha > max_alpha:
-                    fade_in_alpha -= fade_speed
 
-    # Draw loop
-        # Colors with variable alpha
-            top_text_color = Color(rgb_gray[0], rgb_gray[1], rgb_gray[2], int(fade_in_alpha))
-            logo_color = Color(rgb_raywhite[0], rgb_raywhite[1], rgb_raywhite[2], int(fade_in_alpha))
-            bottom_text_color = Color(rgb_gray[0], rgb_gray[1], rgb_gray[2], int(fade_in_alpha))
-
-        # Text that lets the player know the game was made with raylib
-            draw_text("made with", RENDER_WIDTH//2 - measure_text("made with", 10)//2, RENDER_HEIGHT//2 - 156, 10, top_text_color)
-
-        # Raylib logo from shapes example on raylib.com, modified to fade-in
-            draw_rectangle(RENDER_WIDTH//2 - 128, RENDER_HEIGHT//2 - 128, 256, 256, logo_color)
-            draw_rectangle(RENDER_WIDTH//2 - 112, RENDER_HEIGHT//2 - 112, 224, 224, BLACK)
-            draw_text("raylib", RENDER_WIDTH//2 - 44, RENDER_HEIGHT//2 + 48, 50, logo_color)
-
-            draw_text("this is NOT a texture!", RENDER_WIDTH//2 - measure_text("this is NOT a texture!", 10)//2, RENDER_HEIGHT//2 + 147, 10, bottom_text_color)
+    ## Draw loop ##
 
         # Logo from texture
             draw_texture_v(logo_texture, Vector2(RENDER_WIDTH//2 - 32, RENDER_HEIGHT//2 - 32), WHITE)
 
-# TITLE SCREEN
+
+## TITLE SCREEN ##
+
         elif current_screen == GameScreen.TITLE:
 
-    # Update loop
+    ## Update loop ##
+
         # Check for screen switch conditions
-            if is_key_pressed(KEY_SPACE) or is_gesture_detected(GESTURE_TAP):
+            if is_key_pressed(KeyboardKey.KEY_SPACE) or is_gesture_detected(Gesture.GESTURE_TAP):
                 current_screen = GameScreen.GAMEPLAY
 
-    # Draw loop
+
+    ## Draw loop ##
+
         # Background
             draw_texture_v(background_texture, Vector2(), WHITE)
 
@@ -183,12 +184,15 @@ def main():
         # Start instruction
             draw_text("PRESS SPACE TO PLAY", RENDER_WIDTH//2 - measure_text("PRESS SPACE TO PLAY", 10)//2, RENDER_HEIGHT//6 * 5, 10, WHITE)
 
-# GAMEPLAY SCREEN
+
+## GAMEPLAY SCREEN ##
+
         elif current_screen == GameScreen.GAMEPLAY:
 
-    # Update loop
+    ## Update loop ##
+
         # Check for screen switch conditions
-            if is_key_pressed(KEY_SPACE) or is_gesture_detected(GESTURE_TAP):
+            if is_key_pressed(KeyboardKey.KEY_SPACE) or is_gesture_detected(Gesture.GESTURE_TAP):
                 current_screen = GameScreen.TITLE
 
         # Update player
@@ -198,14 +202,16 @@ def main():
             camera.target = Vector2(player.pos.x + 8, player.pos.y + 8)
 
         # Camera zoom
-            if is_key_pressed(KEY_ONE):
+            if is_key_pressed(KeyboardKey.KEY_ONE):
                 camera.zoom = camera.zoom - 1.0
-            if is_key_pressed(KEY_TWO):
+            if is_key_pressed(KeyboardKey.KEY_TWO):
                 camera.zoom = camera.zoom + 1.0
 
             camera.zoom = max(1.0, min(4.0, camera.zoom))
 
-    # Draw loop
+
+    ## Draw loop ##
+
         # Lock screen to camera
             begin_mode_2d(camera)
 
@@ -222,7 +228,9 @@ def main():
             end_mode_2d()
         end_texture_mode()
 
-# NATIVE RESOLUTION DRAWING ON ALL SCREENS
+
+## NATIVE RESOLUTION DRAWING ON ALL SCREENS ##
+
         begin_drawing()
         clear_background(BLACK)
 
@@ -248,9 +256,12 @@ def main():
     # Close the loop
         end_drawing()
 
-# Clean up data when quitting
+
+## Clean up data when quitting ##
+
     unload_render_texture(target)
     unload_texture(background_texture)
+    unload_image(logo_image)
     unload_texture(logo_texture)
     unload_texture(player.texture)
     unload_texture(npc_sprites[0])
@@ -258,6 +269,8 @@ def main():
     unload_texture(npc_sprites[2])
     close_window()
 
-# Run main function upon execution
+
+## Run main function upon execution ##
+
 if __name__ == "__main__":
     main()
