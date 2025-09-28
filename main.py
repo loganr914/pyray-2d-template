@@ -7,7 +7,7 @@ from settings import *
 
 def main():
 
-## PLAYER CLASS ##
+    ## PLAYER CLASS ##
 
     class Player:
         def __init__(self, pos, speed):
@@ -22,6 +22,7 @@ def main():
             self.dir = vector2_normalize(self.dir)
 
             dt = get_frame_time()
+
             self.pos.x += self.dir.x * self.speed * dt
             self.pos.y += self.dir.y * self.speed * dt
 
@@ -182,7 +183,13 @@ def main():
             )
 
         # Start instruction
-            draw_text("PRESS SPACE TO PLAY", RENDER_WIDTH//2 - measure_text("PRESS SPACE TO PLAY", 10)//2, RENDER_HEIGHT//6 * 5, 10, WHITE)
+            draw_text(
+                      "PRESS SPACE TO PLAY",
+                      RENDER_WIDTH//2 - measure_text("PRESS SPACE TO PLAY", 10) // 2,
+                      RENDER_HEIGHT//6 * 5,
+                      10,
+                      WHITE
+            )
 
 
 ## GAMEPLAY SCREEN ##
@@ -203,11 +210,11 @@ def main():
 
         # Camera zoom
             if is_key_pressed(KeyboardKey.KEY_ONE):
-                camera.zoom = camera.zoom - 1.0
+                camera.zoom = camera.zoom ^ 0.5
             if is_key_pressed(KeyboardKey.KEY_TWO):
-                camera.zoom = camera.zoom + 1.0
+                camera.zoom = camera.zoom * 2.0
 
-            camera.zoom = max(1.0, min(4.0, camera.zoom))
+            camera.zoom = max(1.0, min(2.0, camera.zoom))
 
 
     ## Draw loop ##
@@ -232,6 +239,7 @@ def main():
 ## NATIVE RESOLUTION DRAWING ON ALL SCREENS ##
 
         begin_drawing()
+
         clear_background(BLACK)
 
     # Draw scaled render texture to window resolution

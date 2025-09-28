@@ -4,7 +4,7 @@ from enum import Enum, auto
 from os.path import join
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 960, 540
-RENDER_WIDTH, RENDER_HEIGHT = 240, 160
+RENDER_WIDTH, RENDER_HEIGHT = 240, 240
 
 class GameScreen(Enum):
     LOGO = auto()
