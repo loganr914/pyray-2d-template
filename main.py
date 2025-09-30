@@ -7,7 +7,7 @@ from settings import *
 
 def main():
 
-    ## PLAYER CLASS ##
+    ## PLAYER OBJECT ##
 
     class Player:
         def __init__(self, pos, speed):
@@ -44,6 +44,8 @@ def main():
     init_window(SCREEN_WIDTH, SCREEN_HEIGHT, b"pixel scaling template")
     set_window_min_size(RENDER_WIDTH, RENDER_HEIGHT)
 
+## Load render texture for framebuffer ##
+
     target = load_render_texture(RENDER_WIDTH, RENDER_HEIGHT)
 
 
@@ -68,6 +70,9 @@ def main():
         load_texture(join('assets', 'textures', 'red.png'))
     ]
 
+    vignette_frame = gen_image_gradient_radial(RENDER_WIDTH, RENDER_HEIGHT, 0.5, Color(0, 0, 0, 0), Color(0, 0, 0, 255))
+    vignette_texture = load_texture_from_image(vignette_frame)
+
 
 ## Camera settings ##
 
@@ -84,7 +89,7 @@ def main():
     current_screen = GameScreen.LOGO
 
 
-## Set FPS to monitor setting ##
+## Set FPS to monitor setting and FPS counter state to not show by default ##
 
     FPS = get_monitor_refresh_rate(get_current_monitor())
 
@@ -174,6 +179,10 @@ def main():
         # Background
             draw_texture_v(background_texture, Vector2(), WHITE)
 
+            draw_texture_v(vignette_texture, Vector2(), WHITE)
+
+            
+
         # Title
             draw_text("GAME TITLE",
                       RENDER_WIDTH//2 - measure_text("GAME TITLE", 50)//2,
@@ -210,7 +219,7 @@ def main():
 
         # Camera zoom
             if is_key_pressed(KeyboardKey.KEY_ONE):
-                camera.zoom = camera.zoom ^ 0.5
+                camera.zoom = camera.zoom * 0.5
             if is_key_pressed(KeyboardKey.KEY_TWO):
                 camera.zoom = camera.zoom * 2.0
 

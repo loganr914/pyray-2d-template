@@ -1,10 +1,9 @@
-# 
 from pyray import *
 from enum import Enum, auto
 from os.path import join
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 960, 540
-RENDER_WIDTH, RENDER_HEIGHT = 240, 240
+RENDER_WIDTH, RENDER_HEIGHT = 480, 270
 
 class GameScreen(Enum):
     LOGO = auto()
